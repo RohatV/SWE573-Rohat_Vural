@@ -1,0 +1,47 @@
+{%extends "base.html" %}
+
+{% block content %}
+<h1> Welcome to Twhisper</h1>
+
+<form method="POST" > {% csrf_token %}
+    <input type="text" name="query">
+    <button type="submit">Search Tweets</button>
+</form>
+
+<div id="results">
+    {% if data %}
+    <table
+      class="tablo"
+      border="5"
+      width="%100"
+      cellspacing="5"
+      cellpadding="5"
+    >
+    <thead>
+      <tr>
+        <th>Tweet</th>
+        <th>Sentiment</th>
+        <th>User</th>
+      </tr>
+    </thead>
+
+    <tbody>  
+      
+      {% for tweets in data %}
+      <tr>
+        <td>{{tweets.tweet}}</td>
+        <td>{{tweets.sentiment}}</td>
+        <td>{{tweets.user}}</td>
+
+      </tr>
+      {%endfor%}
+    </tbody> 
+    </table>
+    <div id="image">
+      <img height="100%" src="{{ barChart }}">
+    </div>
+    {% endif %}
+  </div>
+
+{% endblock %}
+
