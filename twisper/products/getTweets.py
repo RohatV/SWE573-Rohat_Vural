@@ -12,9 +12,7 @@ import base64
 import re
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
 sid = SentimentIntensityAnalyzer()
-
 STOPWORDS = set(stopwords.words("english"))
-
 consumer_key = ""
 consumer_secret = ""
 access_token = '' 
@@ -49,7 +47,7 @@ def bar_chart(df,query):
     words= list(zip(*sort_list))[0]
     frequancy = list(zip(*sort_list))[1]
     plt.figure(figsize=(7,5))
-    plt.bar(words[0:20],frequancy[0:20],width=0.75,edgecolor="#f05131", label="Frequancy",color="#4682B4")
+    plt.bar(words[0:20],frequancy[0:20],width=0.75,edgecolor="#f05131", label="Frequency",color="#4682B4")
     plt.legend(fontsize=15)
     plt.title("Most Common Words In Tweets",fontsize=20)
     #plt.xlabel("words", fontsize=15)
@@ -57,6 +55,21 @@ def bar_chart(df,query):
     plt.yticks(fontsize=15)
     plt.tight_layout()
     pth=Path(__file__).parent
+    img = io.BytesIO()
+    plt.savefig(img,format='jpeg')
+    img.seek(0)
+    string = base64.b64encode(img.read())
+    img64='data:img/png;base64,'+urllib.parse.quote(string)
+    return img64
+
+def pie_chart(df):
+    y=df["sentiment"].value_counts()
+    colour={"Very Positive":"#3BB9FF","Positive":"#82CAFF","Neutral":"#E5E4E2","Negatif":"#F75D59","Very Negatif":"#F62817"}
+    plt.figure(figsize=(8,5))
+    plt.pie(y,labels=y.values, colors=(colour[i] for i in y.keys()),shadow=True,textprops={'fontsize': 15})
+    plt.title("Overall Sentiment Distribution",fontsize=20)
+    plt.legend(y.keys(),loc="center left",bbox_to_anchor=(0.93,0.70),fontsize=15)
+    plt.tight_layout()
     img = io.BytesIO()
     plt.savefig(img,format='jpeg')
     img.seek(0)

@@ -1,27 +1,37 @@
 {%extends "base.html" %}
 
 {% block content %}
-<h1> Welcome to Twhisper</h1>
+<div class="topnav">
+  <a href="/">Home</a>
+  <a class="active" href="search_view">Search Page</a>
+  <a href="search_history">Search History</a>
+  <p><b>Twhisper</b></p>
 
-<form method="POST" > {% csrf_token %}
+</div>
+
+<div >
+  <form method="POST" > {% csrf_token %}
     <input type="text" name="query">
     <button type="submit">Search Tweets</button>
 </form>
+</div>
 
-<div id="results">
-    {% if data %}
+  {% if data %}
+
+<div class="float-container">
+  <div class="float-tweets">
     <table
       class="tablo"
-      border="5"
-      width="%100"
-      cellspacing="5"
-      cellpadding="5"
+      border="5 steelblue"
+      width="%95"
+      cellspacing="1"
+      cellpadding="1"
     >
     <thead>
       <tr>
         <th>Tweet</th>
         <th>Sentiment</th>
-        <th>User</th>
+
       </tr>
     </thead>
 
@@ -31,17 +41,27 @@
       <tr>
         <td>{{tweets.tweet}}</td>
         <td>{{tweets.sentiment}}</td>
-        <td>{{tweets.user}}</td>
+
 
       </tr>
       {%endfor%}
     </tbody> 
     </table>
-    <div id="image">
-      <img height="100%" src="{{ barChart }}">
-    </div>
-    {% endif %}
   </div>
+
+  <div class="float-charts">
+    <img width="95%" height="95%" src="{{ barChart }}">
+  </div>
+  
+  <div class="float-charts">
+    <img width="98%" height="95%" src="{{ pieChart }}">
+  </div>
+  
+</div>
+
+
+
+  {% endif %}
 
 {% endblock %}
 
