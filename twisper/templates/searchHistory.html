@@ -2,12 +2,81 @@
 
 {% block content %}
 <div class="topnav">
-    <a href="/">Home</a>
-    <a href="search_view">Search Page</a>
-    <a class="active" href="">Search History</a>
+  <a href="{% url 'home' %}">Home</a>
+  <a href="{% url 'search_page' %}">Search Page</a>
+  <a class="active" href="{% url 'history_page' %}">Search History</a>
+  {% if user.is_authenticated %}
+  <span><a href="{% url 'logout' %}">Logout</a></span>
+  <span>{{request.user}}</span>
+  {% else %}
+  <span><a href="{% url 'register' %}">Sign Up</a></span>
+  <span><a href="{% url 'login' %}">Login</a></span>
+  {% endif %}
     <p><b>Twhisper</b></p>
   
   </div>
 <h1> History </h1>
+<div >
+  {% csrf_token %}
+  <form  > 
+    <label >Searched Queries:</label>
+    {% if queries_and_dates %}
+    <select name="selected_query_and_date" id="selected_query_and_date">
+      <option selected="selected" disabled>Select a query and date</option>
+      {% for query_and_date in queries_and_dates %}
+      <option value="{{query_and_date}}" >{{query_and_date}}</option>
+      {%endfor%}
+    </select>
+    <button type="submit"  >See</button>
+    {% else %}
+    <p>Your histor is empty</p>
+    {% endif %}    
+</form>
+</div>
 
+{% if data %}
+<div class="float-container">
+  <div class="float-tweets">
+    <table
+      class="tablo"
+      border="5 steelblue"
+      width="%95"
+      cellspacing="1"
+      cellpadding="1"
+    >
+    <thead>
+      <tr>
+        <th>Tweet</th>
+        <th>Sentiment</th>
+
+      </tr>
+    </thead>
+
+    <tbody>  
+      
+      {% for tweets in data %}
+      <tr>
+        <td>{{tweets.tweet}}</td>
+        <td>{{tweets.sentiment}}</td>
+
+
+      </tr>
+      {%endfor%}
+    </tbody> 
+    </table>
+  </div>
+
+  <div class="float-charts">
+    <img width="95%" height="95%" src="{{ barChart }}">
+  </div>
+  
+  <div class="float-charts">
+    <img width="98%" height="95%" src="{{ pieChart }}">
+  </div>
+  
+</div>
+{% endif %}
+<div class="float-charts">
+  <img width="98%" height="95%" src="{{ lineChart }}">
+</div>
 {% endblock %}

@@ -2,18 +2,52 @@
 
 {% block content %}
 <div class="topnav">
-  <a href="/">Home</a>
-  <a class="active" href="search_view">Search Page</a>
-  <a href="search_history">Search History</a>
+  <a href="{% url 'home' %}">Home</a>
+  <a class="active" href="{% url 'search_page' %}">Search Page</a>
+  <a href="{% url 'history_page' %}">Search History</a>
+    {% if user.is_authenticated %}
+      <span><a href="{% url 'logout' %}">Logout</a></span>
+      <span>{{request.user}}</span>
+    {% else %}
+    <span><a href="{% url 'register' %}">Sign Up</a></span>
+    <span><a href="{% url 'login' %}">Login</a></span>
+    {% endif %}
+
   <p><b>Twhisper</b></p>
+
+  
 
 </div>
 
-<div >
-  <form method="POST" > {% csrf_token %}
-    <input type="text" name="query">
+<div class="butons" >
+  {% csrf_token %}
+  <form >
+    <label >Keyword </label>
+    <input type="text" name="query" id="query">
+    <label >How many Tweets </label>
+    <select name="selected_number" id="selected_number">
+      <option selected="selected" disabled>Select a number</option>
+      <option value=25 >25</option>
+      <option value=50 >50</option>
+      <option value=75 >75</option>
+      <option value=100 >100</option>
+    </select>
     <button type="submit">Search Tweets</button>
 </form>
+    <form >
+      {% if user.is_authenticated %}
+      {% if saved != True %}
+      <button name="save" value="True" type="submit" >Save Results</button>
+      {% else %}
+      <button name="save" value="True" disabled >Results Saved!</button>
+      {% endif %}
+      {% else %}
+      {% if data %}
+      <label > ***Login required in order to save results! </label>
+      {% endif %}
+      {% endif %}
+    </form>
+
 </div>
 
   {% if data %}
