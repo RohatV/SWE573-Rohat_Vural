@@ -93,60 +93,47 @@ def get_sentiment(text):
         sentiment="Very Positive"
     return sentiment
 
-def fetch_tweets(query:str):
+def fetch_tweets(query:str,number:int):
     tweets=[]
-    dt = api.search(q=query, lang="en", count=100, tweet_mode='extended')
+    dt = api.search(q=query, lang="en", count=number, tweet_mode='extended')
     for d in dt:
         if 'retweeted_status' in d._json:
             tweet=d._json['retweeted_status']['full_text']
         else:
             tweet=d.full_text
-        #fav=d.favorite_count
-        #rt=d.retweet_count
         user=d.user.screen_name
-        twhisper_user="rohat"
         date=str(d.created_at)
         date=date[0:10]
         sentiment= get_sentiment(tweet)
-        #tweets.append((text,fav,rt,user))
-        tweets.append((tweet,sentiment,user,date,twhisper_user,query))        
-        #headers=["tweet","favoriteNumber","retweedNumber","user"]
-        headers=["tweet","sentiment","user","date","twhisper_user","query"]
+        tweets.append((tweet,sentiment,user,date,query))        
+        headers=["tweet","sentiment","user","date","query"]
         mydf=pd.DataFrame(tweets,columns=headers)
     return mydf
 
+def lineChart(df,query:str):
+    mydf=df[df["query"]==query]
+    dates=sorted(set(df['date']))
+    complist=[]
+    scorelist=[]
+    for date in dates:
+        comp=0
+        tempdf=mydf[mydf["date"]==date]
+        for tweet in tempdf["tweet"]:
+            polarity = sid.polarity_scores(tweet).get('compound')
+            comp=comp+polarity   
+        complist.append(comp)
+    plt.figure(figsize=(8,5))
+    plt.plot(dates, complist, color='red', marker='o')
+    plt.title('Overall sentiment change by date', fontsize=14)
+    plt.xlabel('date', fontsize=14)
+    plt.ylabel('sentiment', fontsize=14)
+    plt.grid(True)
+    plt.tight_layout()
+    img = io.BytesIO()
+    plt.savefig(img,format='jpeg')
+    img.seek(0)
+    string = base64.b64encode(img.read())
+    img65='data:img/png;base64,'+urllib.parse.quote(string)
+    return img65
 
 
-#tweets=fetch_tweets("litecoin")
-
-
-#bar_chart(tweets)
-
-"""def bar_chart(df):
-    malist=[]
-    mydict={}
-    #TOKEN_PATTERN = r"\b[a-zA-Z][a-zA-Z]+\b"
-    for i,row in df.iterrows():
-        #words= nltk.regexp_tokenize(row["Tweet"], TOKEN_PATTERN)
-        words=row["tweet"].split()
-        for w in words:
-            w=w.lower().strip(".,?*!#/\|><;=-_:")
-            if w in STOPWORDS:
-                continue
-            if w in mydict.keys():
-                mydict[w] +=1
-            else:
-                mydict[w]=1
-    sort_list = sorted(mydict.items(), key=op.itemgetter(1),reverse=True)
-    words= list(zip(*sort_list))[0]
-    frequancy = list(zip(*sort_list))[1]
-    plt.figure(figsize=(15,6))
-    plt.bar(words[0:20],frequancy[0:20],width=0.75,edgecolor="#f05131", label="Frequancy",color="#4682B4")
-    plt.legend()
-    plt.title("Most Common Words In Tweets",fontsize=25)
-    plt.xlabel("words", fontsize=20)
-    plt.xticks(rotation=75,fontsize=15)
-    plt.yticks(fontsize=15)
-    pth=Path(__file__).parent
-    plt.savefig(pth/"myimage.jpeg")
-    plt.show()"""

@@ -5,6 +5,13 @@
     <a class="active" href="">Home</a>
     <a href="search_view">Search Page</a>
     <a href="search_history">Search History</a>
+    {% if user.is_authenticated %}
+    <span><a href="{% url 'logout' %}">Logout</a></span>
+    <span>{{request.user}}</span>
+    {% else %}
+    <span><a href="{% url 'register' %}">Sign Up</a></span>
+    <span><a href="{% url 'login' %}">Login</a></span>
+    {% endif %}
     <p><b>Twhisper</b></p>
   
   </div>
