@@ -24,8 +24,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = '!xqp&n@f^sjrajc=m(5$thh15zxmj9aum40l+xkf2ymnrtzwfx'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-#DEBUG = True######
-DEBUG = int(os.environ.get('DEBUG', default=1)) 
+DEBUG = False
+#DEBUG = int(os.environ.get('DEBUG', default=0)) 
 
 ALLOWED_HOSTS = ["*"]
 
@@ -78,19 +78,17 @@ WSGI_APPLICATION = 'twisper.wsgi.application'
 
 DATABASES = {
     "default": {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'd436npibmanq8u',
-        'USER':'dswaborggplsgu',
-        'PASSWORD' : '7e2e87068c3f95f3d62fbe52ca1ad31599b197b2fe8f6f9618649af8c12790cb',
-        'HOST':'ec2-52-2-82-109.compute-1.amazonaws.com',
-        'PORT':'5432'
+        'ENGINE': '',
+        'NAME': '',
+        'USER':'',
+        'PASSWORD' : '',
+        'HOST':'',
+        'PORT':''
     }
 }
 #Heroku db settings
 import dj_database_url
-print(dj_database_url)
 db_from_env = dj_database_url.config()
-print(db_from_env)
 DATABASES['default'].update(db_from_env)
 DATABASES['default']['CONN_MAX_AGE'] = 500
 

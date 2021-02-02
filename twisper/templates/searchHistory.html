@@ -7,7 +7,7 @@
   <a class="active" href="{% url 'history_page' %}">Search History</a>
   {% if user.is_authenticated %}
   <span><a href="{% url 'logout' %}">Logout</a></span>
-  <span>{{request.user}}</span>
+  <span><a>Hello,{{request.user}}</a></span>
   {% else %}
   <span><a href="{% url 'register' %}">Sign Up</a></span>
   <span><a href="{% url 'login' %}">Login</a></span>
@@ -15,11 +15,11 @@
     <p><b>Twhisper</b></p>
   
   </div>
-<h1> History </h1>
-<div >
+
+<div  class="butons">
   {% csrf_token %}
   <form  > 
-    <label >Searched Queries:</label>
+    <label >Saved Resuls:</label>
     {% if queries_and_dates %}
     <select name="selected_query_and_date" id="selected_query_and_date">
       <option selected="selected" disabled>Select a query and date</option>
@@ -27,9 +27,14 @@
       <option value="{{query_and_date}}" >{{query_and_date}}</option>
       {%endfor%}
     </select>
-    <button type="submit"  >See</button>
+    <button type="submit" name="seebutton" value="clicked"  >See Results</button>
+    {% if deleted != True %}
+    <button name="delete" value="True" type="submit" >Delete Selected Results</button>
     {% else %}
-    <p>Your histor is empty</p>
+    <button name="save" value="True" disabled >Results Deleted!</button>
+    {% endif %}
+    {% else %}
+    <p>You don't have anything saved!</p>
     {% endif %}    
 </form>
 </div>
@@ -75,8 +80,11 @@
   </div>
   
 </div>
-{% endif %}
-<div class="float-charts">
-  <img width="98%" height="95%" src="{{ lineChart }}">
+<div class="linechart">
+  <img width="50%" height="95%" src="{{ lineChart }}">
 </div>
+
+
+{% endif %}
+
 {% endblock %}

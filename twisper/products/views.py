@@ -5,10 +5,11 @@ from django.contrib.auth import authenticate,login,logout
 from django.contrib.auth.decorators import login_required
 from .forms import (tweetsForm, registerForm)
 from .getTweets import (fetch_tweets,bar_chart,pie_chart,lineChart)
-from .saveTweets import save_tweets, get_users_and_queries_from_db
+from .saveTweets import (save_tweets, get_users_and_queries_from_db, delete_from_database)
 import pandas as pd
 import json
 # Create your views here.
+
 fetchedtweets=[]
 
 def register_page(request, *args, **kwargs):
@@ -80,16 +81,31 @@ def history_page(request, *args, **kwargs):
         context={"queries_and_dates":queries_and_dates}
         myvalue=request.GET       
         selectedQueriesAndDates=myvalue.get("selected_query_and_date","None")
-        if selectedQueriesAndDates!="None":
+        deleteButtonClicked=myvalue.get("delete","False")
+        if selectedQueriesAndDates!="None" and deleteButtonClicked=="False":
             query=selectedQueriesAndDates[:-11]
+            date=selectedQueriesAndDates[-10:]
+            df=df[df["query"]==query]
             context["lineChart"] = lineChart(df,query)
-            df=df[df["queries_and_dates"]==selectedQueriesAndDates]
+            df=df[df["date"]==date]
             barChart = bar_chart(df,query)
             pieChart = pie_chart(df)
             context["selectedQueriesAndDates"]=selectedQueriesAndDates
             context["data"]= df.reset_index().to_dict(orient ='records')
             context["barChart"]=barChart
-            context["pieChart"]=pieChart      
+            context["pieChart"]=pieChart  
+        if selectedQueriesAndDates!="None" and deleteButtonClicked=="True":
+            query=selectedQueriesAndDates[:-11]
+            date=selectedQueriesAndDates[-10:]
+            delete_from_database(query,date,logedInUser)
+            deleted=True
+            df=get_users_and_queries_from_db()
+            df=df[df["twhisper_user"]==logedInUser]
+            df["queries_and_dates"]=df["query"]+"/"+df["date"]
+            queries_and_dates=list(set(df["queries_and_dates"]))
+            context={"queries_and_dates":queries_and_dates,"deleted":deleted}
+            print(deleteButtonClicked)
+
     return render(request,"searchHistory.html",context)
 
 
