@@ -11,8 +11,12 @@ import urllib
 import base64
 import re
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
+from nltk.stem import WordNetLemmatizer
+
 sid = SentimentIntensityAnalyzer()
+wordnet_lemmatizer = WordNetLemmatizer()
 STOPWORDS = set(stopwords.words("english"))
+
 consumer_key = ""
 consumer_secret = ""
 access_token = '' 
@@ -30,15 +34,15 @@ def clean_text(text:str):
 def bar_chart(df,query):
     malist=[]
     mydict={}
-    #TOKEN_PATTERN = r"\b[a-zA-Z][a-zA-Z]+\b"
+    TOKEN_PATTERN = r"\b[a-zA-Z][a-zA-Z]+\b"
     for i,row in df.iterrows():
-        #words= nltk.regexp_tokenize(row["Tweet"], TOKEN_PATTERN)
-        #words=row["tweet"].split()
-        words=clean_text(row["tweet"]).split()
+        words=clean_text(row["tweet"])
+        words= nltk.regexp_tokenize(words, TOKEN_PATTERN)
         for w in words:
-            w=w.lower().strip(".,?*!#/\|><;=-_:")
-            if w in STOPWORDS or w==query:
+            w=w.lower()            
+            if w in STOPWORDS or w==query or w=="amp":
                 continue
+            w=wordnet_lemmatizer.lemmatize(w, pos="v")
             if w in mydict.keys():
                 mydict[w] +=1
             else:
@@ -124,9 +128,9 @@ def lineChart(df,query:str):
         complist.append(comp)
     plt.figure(figsize=(8,5))
     plt.plot(dates, complist, color='red', marker='o')
-    plt.title('Overall sentiment change by date', fontsize=14)
-    plt.xlabel('date', fontsize=14)
-    plt.ylabel('sentiment', fontsize=14)
+    plt.title('Sentiment Change by Date', fontsize=14)
+    plt.xlabel('Date', fontsize=14)
+    plt.ylabel('Sum of polarity scores', fontsize=14)
     plt.grid(True)
     plt.tight_layout()
     img = io.BytesIO()

@@ -7,7 +7,7 @@
   <a href="{% url 'history_page' %}">Search History</a>
     {% if user.is_authenticated %}
       <span><a href="{% url 'logout' %}">Logout</a></span>
-      <span>{{request.user}}</span>
+      <span><a>Hello,{{request.user}}</a></span>
     {% else %}
     <span><a href="{% url 'register' %}">Sign Up</a></span>
     <span><a href="{% url 'login' %}">Login</a></span>
@@ -23,7 +23,7 @@
   {% csrf_token %}
   <form >
     <label >Keyword </label>
-    <input type="text" name="query" id="query">
+    <input type="text" name="query" id="query" placeholder="E.g: Covid">
     <label >How many Tweets </label>
     <select name="selected_number" id="selected_number">
       <option selected="selected" disabled>Select a number</option>
